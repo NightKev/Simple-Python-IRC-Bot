@@ -1,3 +1,6 @@
+# Copyright (c) 2011 Kevin Skusek
+# The full copyright notice can be found in the file LICENSE
+
 from ircutils import bot, ident, start_all
 import parseargs
 
