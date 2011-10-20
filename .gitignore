@@ -1,2 +1,3 @@
-commit.sh
-start.sh
+*.sh
+*.log
+*.pyc

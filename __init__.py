@@ -1,1 +1,1 @@
-__all__ = ['parseargs','pybot']
+__all__ = ['parseargs','spirebot']
