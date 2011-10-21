@@ -3,4 +3,4 @@
 *.pyc
 *.txt
 functions/*.py
-!functions/__init__.py
+!__init__.py
