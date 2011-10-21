@@ -35,7 +35,17 @@ class SpireBot(bot.SimpleBot):
     
     def on_message(self, event):
         if event.message.find(self.trigger) == 0:
-            line = event.params[0][len(self.trigger):]
+            calluserfunc(self, event)
+        
+    def reqadmin(self, funcname, host):
+        if funcname not in self.adminfuncs:
+            self.adminfuncs.append(funcname)
+            return host in self.admins
+        else:
+            return true
+    
+    def calluserfunc(self, event):
+        line = event.params[0][len(self.trigger):]
             command = line.split(None,1)[0]
             if not path.exists('./functions/'+command+'.py'): return
             if command in self.adminfuncs and event.host not in self.admins:
@@ -49,13 +59,6 @@ class SpireBot(bot.SimpleBot):
             
             exec "import functions.{0} as bot{0}".format(command)
             exec "bot{0}.main(self, args, event)".format(command)
-        
-    def reqadmin(self, funcname, host):
-        if funcname not in self.adminfuncs:
-            self.adminfuncs.append(funcname)
-            return host in self.admins
-        else:
-            return true
 
 if __name__ == '__main__':
     args = parseargs.getargs()
