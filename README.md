@@ -1,4 +1,4 @@
-This bot requires the [IRCUtils framework][1] ([Install guide][2]) and [Python 2.7.x][3] (afaict, it should also work in Python 2.6.x (untested); it almost definitely won't work pre-2.6 though).
+This bot requires the [IRCUtils framework][1] ([Install guide][2]) and [Python 2.7.x][3] (afaict, it should also work in Python 2.6.x (untested), and *maybe* 2.5.x; it almost definitely won't work pre-2.5 though).
 [1]: http://dev.guardedcode.com/projects/ircutils
 [2]: http://dev.guardedcode.com/docs/ircutils/installation.html
 [3]: http://python.org
