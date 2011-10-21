@@ -29,7 +29,7 @@ class SpireBot(bot.SimpleBot):
                 adminfile.close()
                 
         except IOError:
-            print "Unable to open admins.txt. Make sure the bot directory is read/write enabled for the appropriate user(s)."
+            print("Unable to open admins.txt. Make sure the bot directory is read/write enabled for the appropriate user(s).")
         
         self.adminfuncs = []
     
