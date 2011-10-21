@@ -14,8 +14,9 @@ def getargs():
 	parser.add_argument('--no-ident-server', action='store_const', const=True, default=False, help="If you are unable to run an ident server on your computer (ie: if you can't forward port 113), then you can use this option to disable it.")
 	parser.add_argument('--channels', metavar='#channel1[ key[,#channel2[ key[,...]]]]', help="Channels you want the bot to join after it connects to the server. Optional.")
 	parser.add_argument('--ssl', action='store_const', const=True, default=False, help="Connect via SSL. Optional.")
-	parser.add_argument('--server-password', help="Password used to connect to the server (such as for a BNC service, or some of the livestreaming IRC servers ex: irc.justin.tv). Normally you won't need this.")
+	parser.add_argument('--server-password', help="Password used to connect to the server (such as for a BNC service, or some of the livestreaming IRC servers like justin.tv/twitch.tv). Normally you won't need this.")
 	parser.add_argument('--real-name', help="Sets the bot's 'real name'. Optional.")
+	parser.add_argument('-t','--trigger', default='~', help="The trigger to use for bot commands (ex: '~google abc'). Defaults to ~ if not set.")
 	
 	if __name__ == '__main__':
 		parser.prog = 'spirebot.py'
