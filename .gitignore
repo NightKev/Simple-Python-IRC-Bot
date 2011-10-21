@@ -2,4 +2,5 @@
 *.log
 *.pyc
 *.txt
-test.py
+functions/*.py
+!functions/__init__.py
