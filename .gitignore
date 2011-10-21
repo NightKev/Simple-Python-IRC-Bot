@@ -3,4 +3,6 @@
 *.pyc
 *.txt
 functions/*.py
+modules/*.py
+!modules/alias.py
 !__init__.py

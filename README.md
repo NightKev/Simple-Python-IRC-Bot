@@ -16,3 +16,9 @@ If you want to restrict the function to users with administrator privileges, you
         if not self.reqadmin('quit', event.host): # assuming the function name is 'quit'
             self.send_message(event.source,"This function is restricted to administrators only.")
             return
+
+If you want to restrict the function to only work in queries, add the following check to `main()`:
+
+    if event.target != event.source: return # if the message was sent to a channel, event.target will be set to the channel name
+                                            # otherwise it will be the same as the nick of the user sending the message
+                                            # change the "!=" into a "==" to make it work only in channels
