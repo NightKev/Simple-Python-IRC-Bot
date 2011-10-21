@@ -17,12 +17,5 @@ def getargs():
     parser.add_argument('--server-password', help="Password used to connect to the server (such as for a BNC service, or some of the livestreaming IRC servers like justin.tv/twitch.tv). Normally you won't need this.")
     parser.add_argument('--real-name', help="Sets the bot's 'real name'. Optional.")
     parser.add_argument('-t','--trigger', default='~', help="The trigger to use for bot commands (ex: '~google abc'). Defaults to ~ if not set.")
-    
-    if __name__ == '__main__':
-        parser.prog = 'spirebot.py'
-        return parser.parse_args(['-h'])
         
     return parser.parse_args()
-    
-if __name__ == '__main__':
-    args = getargs()
