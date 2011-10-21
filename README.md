@@ -7,12 +7,14 @@ Creating bot functions
 -----
 Each function requires its own file (ex: `quit.py`) in the `/functions` directory.
 To be executed, you must define the function `main` with the parameters `self, args, event` in that order, like this:
-
+```python
     def main(self, args, event):
+```
 
-If you want to restrict the function to users with administrator privileges, you must add a call to `self.reqadmin(<name of function>)` at the top of main(), similar to this:
-
+If you want to restrict the function to users with administrator privileges, you must add a call to `self.reqadmin(<name of function>)` at the top of `main()`, similar to this:
+```python
     def main(self, args, event):
         if not self.reqadmin('quit', event.host): # assuming the function name is 'quit'
             self.send_message(event.source,"This function is restricted to administrators only.")
             return
+```
