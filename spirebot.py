@@ -18,12 +18,29 @@ class SpireBot(bot.SimpleBot):
 		self.connect(args.server, port=args.port, channel=channels, use_ssl=args.ssl, password=args.server_password)
 		if args.password: self.identify(args.password)
 		self.trigger = args.trigger
+		self.admins = []
+		try:
+			if path.exists('./admins.txt'):
+				adminfile = open('admins.txt','r')
+				for user in adminfile:
+					self.admins.append(user)
+			else:
+				adminfile = open('admins.txt','w')
+				adminfile.write('')
+				adminfile.close()
+		except IOError:
+			print "Unable to open admins.txt. Make sure the bot directory is read/write enabled for the appropriate user(s)."
+		
+		self.adminfuncs = []
 	
 	def on_message(self, event):
 		if event.message.find(self.trigger) == 0:
 			line = event.params[0][len(self.trigger):]
 			command = line.split(None,1)[0]
 			if not path.exists('./functions/'+command+'.py'): return
+			if command in self.adminfuncs and event.host not in self.admins:
+				self.send_message(event.source,"This function is restricted to administrators only.")
+				return
 			try:
 				args = line.split(None,1)[1]
 			except IndexError:
