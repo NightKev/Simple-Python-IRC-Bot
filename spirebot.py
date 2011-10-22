@@ -8,6 +8,8 @@ from os import path
 
 class SpireBot(bot.SimpleBot):
     """ Main IRC bot class.
+    
+        [user@host ~]$ python2 spirebot.py --nick=SpireBot --server=irc.example.com # minimum required shell parameters
     """
     
     eventlist = ('any','welcome','ping','invite','kick','join','quit','part','nick_change','error', # ircutils.event.StandardEvent
@@ -16,9 +18,11 @@ class SpireBot(bot.SimpleBot):
         'reply','name_reply','list_reply','error_reply')
     
     for event_ in eventlist:
-        exec """def on_{0}(self, event):
-            for module in self.modules['{0}']:
-                call_listener(self, event, '{0}')""".format(event_)
+        if event_ == 'message': continue
+        exec """# create handlers for all possible builtin events
+            def on_{0}(self, event):
+                for module in self.modules['{0}']:
+                    call_listener(self, event, '{0}')""".format(event_)
     
     def __init__(self,args):
         bot.SimpleBot.__init__(self, args.nick)
@@ -80,10 +84,10 @@ class SpireBot(bot.SimpleBot):
         exec "import functions.{0} as botf{0}".format(command)
         exec "botf{0}.main(self, args, event)".format(command)
     
-    def call_listener(self, event, type):
+    def call_listener(self, event, type): # placeholder
         pass
     
-    def loadmodule(self, module):
+    def loadmodule(self, module): # placeholder
         return
         if not path.exists('./modules/{0}.py'.format(module)): return
         exec "import modules.{0} as botm{0}".format(module)
@@ -94,8 +98,14 @@ if __name__ == '__main__':
     
     spirebot = SpireBot(args) # instantiate bot class
     
-    if not args.no_ident_server:
-        identd = ident.IdentServer(userid=args.ident)
+    if args.use_identd_server:
+        id = 'SpireBot'
+        idport = 113
+        if args.ident:
+            id = args.ident
+        if args.identd_port:
+            idport = args.identd_port
+        identd = ident.IdentServer(port=idport, userid=id)
         start_all()
     else:
         spirebot.start()
