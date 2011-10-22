@@ -19,10 +19,9 @@ class SpireBot(bot.SimpleBot):
     
     for event_ in eventlist:
         if event_ == 'message': continue
-        exec """# create handlers for all possible builtin events
-            def on_{0}(self, event):
-                for module in self.modules['{0}']:
-                    call_listener(self, event, '{0}')""".format(event_)
+        exec """def on_{0}(self, event):
+            for module in self.modules['{0}']:
+                call_listener(self, event, '{0}')""".format(event_) # create handlers for all possible ircutils builtin events
     
     def __init__(self,args):
         bot.SimpleBot.__init__(self, args.nick)
