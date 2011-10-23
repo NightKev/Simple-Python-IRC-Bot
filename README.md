@@ -27,6 +27,9 @@ If you want to restrict the function to only work in queries, add the following 
 Quick Changelog
 -----
 
+### v0.3.2
+* Finished module framework, updated readme, updated parseargs.py
+
 ### v0.3.1
 * Change identd server to default off, add identd port selection argument
 
