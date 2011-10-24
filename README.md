@@ -28,13 +28,13 @@ Quick Changelog
 -----
 
 ### v0.3.3
-* Fix some function calls, implement command alias support
+* Fixed some function calls, implement command alias support
 
 ### v0.3.2
 * Finished module framework, updated readme, updated parseargs.py
 
 ### v0.3.1
-* Change identd server to default off, add identd port selection argument
+* Changed identd server to default off, add identd port selection argument
 
 ## v0.3
 * Added most of the framework for easy addition of custom listener modules (ex: log channel messages, kickwords, etc)
@@ -43,4 +43,4 @@ Quick Changelog
 * Added custom command framework (manual invocation of bot action upon recieving specific messages from irc users (ex: "~quit"))
 
 ## v0.1
-* Create a bot that can successfully connect to IRC networks.
+* Created a bot that can successfully connect to IRC networks.
