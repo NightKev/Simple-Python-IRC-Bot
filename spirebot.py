@@ -39,10 +39,10 @@ class SpireBot(bot.SimpleBot):
         self.trigger = args.trigger # trigger for manual bot functions (ex: ~quit)
         self.admins = []
         try:
-            if os.path.exists('./admins.txt'):
+            if os.path.exists('admins.txt'):
                 adminfile = open('admins.txt','r')
                 for user in adminfile:
-                    self.admins.append(user)
+                    self.admins.append(user.replace("\n",''))
             else:
                 adminfile = open('admins.txt','w')
                 adminfile.write('')
@@ -79,7 +79,7 @@ class SpireBot(bot.SimpleBot):
             self.adminfuncs.append(funcname)
             return host in self.admins
         else:
-            return true
+            return True
     
     def call_user_func(self, event):
         line = event.params[0][len(self.trigger):]
@@ -101,10 +101,11 @@ class SpireBot(bot.SimpleBot):
         # dynamic import/call of the function
         try:
             exec "import functions.{0} as botf{0}".format(command)
-            exec "botf{0}.main(self, args, event)".format(command)
+            exec "self.f_{0} = botf{0}".format(command)
+            exec "self.f_{0}.main(self, args, event)".format(command)
         except ImportError:
-            from sys import stderr
-            stderr.write("Failed to import python module '{0}.py' in 'functions/'.".format(command))
+            import sys
+            sys.stderr.write("Failed to import python module '{0}.py' in 'functions/'.".format(command))
             self.send_message(event.target, "An error occurred while trying to perform command '{0}'.".format(command))
     
     def call_listeners(self, event, type):
@@ -117,8 +118,8 @@ class SpireBot(bot.SimpleBot):
         if not os.path.exists('./modules/{0}.py'.format(module)) or module != '__init__': return
         
         exec "import modules.{0} as botm{0}".format(module)
-        exec "botm{0}.init(self)".format(module)
         exec "self.m_{0} = botm{0}".format(module)
+        exec "self.m_{0}.init(self)".format(module)
     
     def add_module(self, modname, type):
         "Add a module to the list of active modules so that it may be executed."
@@ -143,8 +144,13 @@ class SpireBot(bot.SimpleBot):
             return
         
         for line in aliasfile:
-            alias = line.split(',')
-            self.aliases[alias[0]] = alias[1]
+            try:
+                alias = alias.replace('\n','')
+                alias = line.split(',')
+                self.aliases[alias[0]] = alias[1]
+            except IndexError:
+                import sys
+                sys.stderr.write("IndexError occurred while adding aliases.")
 
 if __name__ == '__main__':
     args = parseargs.getargs() # get command line arguments

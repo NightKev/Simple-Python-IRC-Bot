@@ -2,7 +2,5 @@
 *.log
 *.pyc
 *.txt
-functions/*.py
-modules/*.py
-!modules/alias.py
+test.py
 !__init__.py
