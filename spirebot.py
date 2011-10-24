@@ -7,7 +7,7 @@ from ircutils import bot, ident, start_all
     # from . import parseargs, alias
 # except ValueError:
     # import parseargs, alias
-import parseargs, alias
+import parseargs
 import os
 
 class SpireBot(bot.SimpleBot):
@@ -25,7 +25,7 @@ class SpireBot(bot.SimpleBot):
         if event_ == 'message': continue
         exec """def on_{0}(self, event):
             for module in self.modules['{0}']:
-                call_listeners(self, event, '{0}')""".format(event_)
+                self.call_listeners(event, '{0}')""".format(event_)
     
     def __init__(self,args):
         bot.SimpleBot.__init__(self, args.nick)
@@ -34,6 +34,7 @@ class SpireBot(bot.SimpleBot):
         if args.real_name: self.real_name = args.real_name # "*!*@* <this>" (data given from /whois query)
         channels = args.channels.split(',')
         self.connect(args.server, port=args.port, channel=channels, use_ssl=args.ssl, password=args.server_password)
+        self.server = args.server
         if args.password: self.identify(args.password) # nickserv identification
         self.trigger = args.trigger # trigger for manual bot functions (ex: ~quit)
         self.admins = []
@@ -64,12 +65,14 @@ class SpireBot(bot.SimpleBot):
                 for fname in fnames:
                     self.load_module(fname)
                 break
+        
+        self.init_aliases()
     
     def on_message(self, event): # will execute whenever a message ("PRIVMSG <user|channel> :<message>") is recieved by the bot, both channel and query
         if event.message.find(self.trigger) == 0: # ex: ~quit or ~join #channel
-            call_user_func(self, event) # call predefined function in /functions (these are invoked by an irc user directly)
-        else:
-            call_listeners(self, event, 'message')
+            self.call_user_func(event) # call predefined function in /functions (these are invoked by an irc user directly)
+        
+        self.call_listeners(event, 'message')
         
     def req_admin(self, funcname, host): # add function to "admin only" list, also performs admin check if the function wasn't already in the list
         if funcname not in self.adminfuncs:
@@ -107,7 +110,7 @@ class SpireBot(bot.SimpleBot):
     def call_listeners(self, event, type):
         "Execute listeners of the specified event type."
         for module in self.modules[type]:
-            exec "self.m_{0}.main(self, event)".format(module)
+            exec "self.m_{0}.main(event)".format(module)
     
     def load_module(self, module):
         "Import and initialize a module."
@@ -121,6 +124,27 @@ class SpireBot(bot.SimpleBot):
         "Add a module to the list of active modules so that it may be executed."
         self.modules[type].append(modname)
     
+    def init_aliases(self):
+        if not os.path.exists('aliases.txt'):
+            try:
+                aliasfile = open('aliases.txt','w')
+                aliasfile.write('')
+                aliasfile.close()
+            except IOError:
+                import sys
+                sys.stderr.write("Error creating file 'aliases.txt', command alias functionality will not work properly.")
+                return
+        
+        try:
+            aliasfile = open('aliases.txt','r')
+        except IOError:
+            import sys
+            sys.stderr.write("Error opening file 'aliases.txt', unable to load command aliases.")
+            return
+        
+        for line in aliasfile:
+            alias = line.split(',')
+            self.aliases[alias[0]] = alias[1]
 
 if __name__ == '__main__':
     args = parseargs.getargs() # get command line arguments

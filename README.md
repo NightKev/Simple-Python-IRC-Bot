@@ -27,6 +27,9 @@ If you want to restrict the function to only work in queries, add the following 
 Quick Changelog
 -----
 
+### v0.3.3
+* Fix some function calls, implement command alias support
+
 ### v0.3.2
 * Finished module framework, updated readme, updated parseargs.py
 
