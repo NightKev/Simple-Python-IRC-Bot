@@ -11,7 +11,7 @@ To be executed, you must define the function `main` with the parameters `self, a
 
     def main(self, args, event):
 
-If you want to restrict the function to users with administrator privileges, you must add a call to `self.reqadmin(<name of function>)` at the top of `main()`, similar to this:
+If you want to restrict the function to users with administrator privileges, you must add a call to `self.req_admin(<name of function>)` at the top of `main()`, similar to this:
 
     def main(self, args, event):
         if not self.req_admin('quit', event.host): # assuming the function name is 'quit'
