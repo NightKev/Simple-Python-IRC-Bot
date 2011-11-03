@@ -3,12 +3,8 @@
 
 #from __future__ import division, print_function, unicode_literals
 from ircutils import bot, ident, start_all
-# try:
-    # from . import parseargs, alias
-# except ValueError:
-    # import parseargs, alias
 import parseargs
-import os
+import os, sys
 
 class SpireBot(bot.SimpleBot):
     """ Main IRC bot class.
@@ -48,7 +44,6 @@ class SpireBot(bot.SimpleBot):
                 adminfile.write('')
                 adminfile.close()
         except IOError:
-            import sys
             sys.stderr.write("Unable to open admins.txt. Make sure the bot directory is read/write enabled for the appropriate user(s).")
             exit(1)
         
@@ -104,7 +99,6 @@ class SpireBot(bot.SimpleBot):
             exec "self.f_{0} = botf{0}".format(command)
             exec "self.f_{0}.main(self, args, event)".format(command)
         except ImportError:
-            import sys
             sys.stderr.write("Failed to import python module '{0}.py' in 'functions/'.".format(command))
             self.send_message(event.target, "An error occurred while trying to perform command '{0}'.".format(command))
     
@@ -115,7 +109,7 @@ class SpireBot(bot.SimpleBot):
     
     def load_module(self, module):
         "Import and initialize a module."
-        if not os.path.exists('./modules/{0}.py'.format(module)) or module != '__init__': return
+        if not os.path.exists('./modules/{0}.py'.format(module)) or module != '__init__': return "Module does not exist."
         
         exec "import modules.{0} as botm{0}".format(module)
         exec "self.m_{0} = botm{0}".format(module)
@@ -132,14 +126,12 @@ class SpireBot(bot.SimpleBot):
                 aliasfile.write('')
                 aliasfile.close()
             except IOError:
-                import sys
                 sys.stderr.write("Error creating file 'aliases.txt', command alias functionality will not work properly.")
                 return
         
         try:
             aliasfile = open('aliases.txt','r')
         except IOError:
-            import sys
             sys.stderr.write("Error opening file 'aliases.txt', unable to load command aliases.")
             return
         
@@ -149,7 +141,6 @@ class SpireBot(bot.SimpleBot):
                 alias = line.split(',')
                 self.aliases[alias[0]] = alias[1]
             except IndexError:
-                import sys
                 sys.stderr.write("IndexError occurred while adding aliases.")
 
 if __name__ == '__main__':
