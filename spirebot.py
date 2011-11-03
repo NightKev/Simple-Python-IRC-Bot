@@ -53,15 +53,16 @@ class SpireBot(bot.SimpleBot):
         for event in self.eventlist:
             self.modules[event] = []
         
-        if args.load_modules:
-            for dirpath, dirnames, fnames in os.walk('modules/'):
-                if dirpath != 'modules/':
-                    break
-                for fname in fnames:
-                    self.load_module(fname)
-                break
+        # if args.load_modules:
+            # for dirpath, dirnames, fnames in os.walk('modules/'):
+                # if dirpath != 'modules/':
+                    # break
+                # for fname in fnames:
+                    # self.load_module(fname)
+                # break
         
         self.init_aliases()
+        self.core_funcs = ['alias','load','unload','reload','quit'] # functions required for the proper operation of the bot
     
     def on_message(self, event): # will execute whenever a message ("PRIVMSG <user|channel> :<message>") is recieved by the bot, both channel and query
         if event.message.find(self.trigger) == 0: # ex: ~quit or ~join #channel
@@ -111,9 +112,13 @@ class SpireBot(bot.SimpleBot):
         "Import and initialize a module."
         if not os.path.exists('./modules/{0}.py'.format(module)) or module != '__init__': return "Module does not exist."
         
-        exec "import modules.{0} as botm{0}".format(module)
-        exec "self.m_{0} = botm{0}".format(module)
-        exec "self.m_{0}.init(self)".format(module)
+        try:
+            exec "import modules.{0} as botm{0}".format(module)
+            exec "self.m_{0} = botm{0}".format(module)
+            exec "self.m_{0}.init(self)".format(module)
+        except ImportError:
+            sys.stderr.write("Failed to import python module '{0}.py' in 'functions/'.".format(module))
+            return "An error occured while trying to load module '{0}'.".format(module)
     
     def add_module(self, modname, type):
         "Add a module to the list of active modules so that it may be executed."
