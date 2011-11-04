@@ -6,17 +6,10 @@ This bot requires the [IRCUtils framework][1] ([Install guide][2] and [Download]
 
 Creating bot functions
 -----
-Each function requires its own file (ex: `quit.py`) in the `/functions` directory.
-To be executed, you must define the function `main` with the parameters `self, args, event` in that order, like this:
+Each function requires its own file (ex: `8ball.py`) in the `./functions` directory (or the `./functions/admin/` directory if you want to make it an admin-only function, such as a `quit` command).  
+To be executed, you must define the function `main` with four parameters (you can technically call them anything you like, but it's a good idea to make sure they make sense), like this:
 
-    def main(self, args, event):
-
-If you want to restrict the function to users with administrator privileges, you must add a call to `self.req_admin(<name of function>)` at the top of `main()`, similar to this:
-
-    def main(self, args, event):
-        if not self.req_admin('quit', event.host): # assuming the function name is 'quit'
-            self.send_message(event.target,"This function is restricted to administrators only.")
-            return
+    def main(self, args, event, alias):
 
 If you want to restrict the function to only work in queries, add the following check to `main()`:
 
@@ -28,10 +21,10 @@ Quick Changelog
 -----
 
 ### v0.3.3
-* Fixed some function calls, implement command alias support
+* Fixed some function calls, implemented command alias support
 
 ### v0.3.2
-* Finished module framework, updated readme, updated parseargs.py
+* Finished module/listener framework, updated readme, updated parseargs.py
 
 ### v0.3.1
 * Changed identd server to default off, add identd port selection argument
