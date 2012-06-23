@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.txt
+*.bak
 !COPYING.txt
 !LICENSE.txt
 test.py
