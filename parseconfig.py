@@ -2,3 +2,4 @@
 # The full copyright notice can be found in the file LICENSE
 
 import ConfigParser
+config = ConfigParser.SafeConfigParser()

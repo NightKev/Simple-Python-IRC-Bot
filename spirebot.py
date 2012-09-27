@@ -1,15 +1,15 @@
-# Copyright (c) 2011 Kevin Skusek
+# Copyright (c) 2011,2012 Kevin Skusek
 # The full copyright notice can be found in the file LICENSE
 
-#from __future__ import division, print_function, unicode_literals
+#from __future__ import division, print_function, unicode_literals # for later 2to3 conversion
 from ircutils import bot, ident, start_all
-import parseargs
+import parseargs, parseconfig
 import os, sys, traceback
 
 class SpireBot(bot.SimpleBot):
     """ Main IRC bot class.
     
-        [user@host ~]$ python2 spirebot.py --nick=SpireBot --server=irc.example.com # minimum required shell parameters
+        [user@host ~]$ python2 spirebot.py --nick=SpireBot --server=irc.example.com
     """
     
     eventlist = ('any','welcome','ping','invite','kick','join','quit','part','nick_change','error', # ircutils.event.StandardEvent
@@ -47,7 +47,8 @@ class SpireBot(bot.SimpleBot):
             traceback.print_exc()
             exit(1)
         
-        self.adminfuncs = []
+        self.corefuncs = ['alias','load','unload','reload','quit'] # functions required for the proper operation of the bot
+        self.adminfuncs = self.core_funcs
         self.modules = {}
         self.aliases = {}
         for event in self.eventlist:
@@ -62,21 +63,12 @@ class SpireBot(bot.SimpleBot):
                 # break
         
         self.init_aliases()
-        self.core_funcs = ['alias','load','unload','reload','quit'] # functions required for the proper operation of the bot
-        print self.load_module('test')
     
     def on_message(self, event): # will execute whenever a message ("PRIVMSG <user|channel> :<message>") is recieved by the bot, both channel and query
         if event.message.find(self.trigger) == 0: # ex: ~quit or ~join #channel
             self.call_user_func(event) # call predefined function in /functions (these are invoked by an irc user directly)
         
         self.call_listeners(event, 'message')
-        
-    def req_admin(self, funcname, host): # add function to "admin only" list, also performs admin check if the function wasn't already in the list
-        if funcname not in self.adminfuncs:
-            self.adminfuncs.append(funcname)
-            return host in self.admins
-        else:
-            return True
     
     def call_user_func(self, event):
         admincmd = False
@@ -169,6 +161,7 @@ class SpireBot(bot.SimpleBot):
 
 if __name__ == '__main__':
     args = parseargs.getargs() # get command line arguments
+    config = parseconfig.getconfig() # read in settings.cfg
     
     spirebot = SpireBot(args) # instantiate bot class
     

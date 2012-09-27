@@ -1,6 +1,9 @@
 # Copyright (c) 2011,2012 Kevin Skusek
 # The full copyright notice can be found in the file LICENSE
 
+""" If a commandline argument is specified, it will override the corresponding option in settings.cfg
+"""
+
 def getargs():
     import argparse
 

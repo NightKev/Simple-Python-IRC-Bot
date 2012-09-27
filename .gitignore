@@ -4,6 +4,7 @@
 *.pyc
 *.txt
 *.bak
+*.cfg
 !COPYING.txt
 !LICENSE.txt
 test.py
