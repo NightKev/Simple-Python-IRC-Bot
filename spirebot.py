@@ -3,7 +3,8 @@
 
 #from __future__ import division, print_function, unicode_literals # for later 2to3 conversion
 from ircutils import bot, ident, start_all
-import parseargs, parseconfig
+import parseargs
+#import parseconfig
 import os, sys, traceback
 
 class SpireBot(bot.SimpleBot):
@@ -27,12 +28,12 @@ class SpireBot(bot.SimpleBot):
         bot.SimpleBot.__init__(self, args.nick)
         self._mode = args.modes # server global user modes
         self.user = args.ident # *!<this>@*
-        if args.real_name: self.real_name = args.real_name # "*!*@* <this>" (data given from /whois query)
+        if args.real_name: self.real_name = args.real_name # "*!*@* <this>" (such as given in response to a /whois query)
         channels = args.channels.split(',')
         self.connect(args.server, port=args.port, channel=channels, use_ssl=args.ssl, password=args.server_password)
         self.server = args.server
         if args.password: self.identify(args.password) # nickserv identification
-        self.trigger = args.trigger # trigger for manual bot functions (ex: ~quit)
+        self.trigger = args.trigger # trigger for commands (ex: ~quit)
         self.admins = []
         try:
             if os.path.exists('admins.txt'):
@@ -44,33 +45,34 @@ class SpireBot(bot.SimpleBot):
                 adminfile.write('')
                 adminfile.close()
         except IOError:
-            traceback.print_exc()
+            traceback.print_exc() #DEBUG
             exit(1)
         
-        self.corefuncs = ['alias','load','unload','reload','quit'] # functions required for the proper operation of the bot
-        self.adminfuncs = self.core_funcs
+        self.corecmds= ['alias','load','unload','reload','quit'] # commands required for the proper operation of the bot
+        self.adminfuncs = self.corecmds
         self.modules = {}
         self.aliases = {}
         for event in self.eventlist:
             self.modules[event] = []
         
-        # if args.load_modules:
-            # for dirpath, dirnames, fnames in os.walk('modules/'):
-                # if dirpath != 'modules/':
-                    # break
-                # for fname in fnames:
-                    # self.load_module(fname)
-                # break
+        
+        if args.load_modules:
+            for dirpath, dirnames, fnames in os.walk('modules/'):
+                if dirpath != 'modules/':
+                    break
+                for fname in fnames:
+                    self.load_module(fname)
+                break
         
         self.init_aliases()
     
     def on_message(self, event): # will execute whenever a message ("PRIVMSG <user|channel> :<message>") is recieved by the bot, both channel and query
         if event.message.find(self.trigger) == 0: # ex: ~quit or ~join #channel
-            self.call_user_func(event) # call predefined function in /functions (these are invoked by an irc user directly)
+            self.call_user_cmd(event) # call predefined function in /commands (these are invoked by an irc user directly)
         
         self.call_listeners(event, 'message')
     
-    def call_user_func(self, event):
+    def call_user_cmd(self, event):
         admincmd = False
         alias = ''
         line = event.params[0][len(self.trigger):]
@@ -78,11 +80,13 @@ class SpireBot(bot.SimpleBot):
         if command in self.aliases:
             alias = command
             command = self.aliases[command]
-        
+        # TODO: remake this so it actually supports [un]loading functions...
         if command == '__init__': return
-        cexist = os.path.exists('./functions/{0}.py'.format(command))
+        elif not command.isalnum():
+            command = command.translate(None,("/", "\\", ":", "(", ")", "<", ">", "|", "?", "*", "."))
+        cexist = os.path.exists('./commands/{0}.py'.format(command))
         if not cexist:
-            acexist = os.path.exists('./functions/admin/{0}.py'.format(command))
+            acexist = os.path.exists('./commands/admin/{0}.py'.format(command))
             if not acexist:
                 return
             elif event.host not in self.admins:
@@ -99,15 +103,15 @@ class SpireBot(bot.SimpleBot):
         # dynamic import/call of the function
         try:
             if not admincmd:
-                exec "import functions.{0} as botf{0}".format(command)
+                exec "import commands.{0} as botcmd{0}".format(command)
             else:
-                exec "import functions.admin.{0} as botf{0}".format(command)
+                exec "import commands.admin.{0} as botcmd{0}".format(command)
             
-            exec "self.f_{0} = botf{0}".format(command)
-            exec "self.f_{0}.main(self, args, event, alias)".format(command)
+            exec "self.c_{0} = botcmd{0}".format(command)
+            exec "self.c_{0}.main(self, args, event, alias)".format(command)
         except ImportError:
             self.send_message(event.target, "An error occurred while trying to perform command '{0}'.".format(command))
-            traceback.print_exc()
+            traceback.print_exc() #DEBUG
     
     def call_listeners(self, event, type):
         "Execute listeners of the specified event type."
@@ -118,7 +122,10 @@ class SpireBot(bot.SimpleBot):
         "Import and initialize a module."
         err = ''
         if module == '__init__':
-            return "This file cannot be loaded as a module."
+            return "Invalid module name."
+        elif not module.isalnum():
+            module = module.translate(None,("/", "\\", ":", "(", ")", "<", ">", "|", "?", "*", "."))
+        
         if not os.path.exists('./modules/{0}.py'.format(module)):
             return "Module does not exist."
         
@@ -127,7 +134,7 @@ class SpireBot(bot.SimpleBot):
             exec "self.m_{0} = botm{0}".format(module)
             exec "self.m_{0}.init(self)".format(module)
         except ImportError:
-            traceback.print_exc()
+            traceback.print_exc() #DEBUG
             return "An error occured while trying to load module '{0}'.".format(module)
     
     def add_module(self, modname, type):
@@ -142,13 +149,13 @@ class SpireBot(bot.SimpleBot):
                 aliasfile.write('')
                 aliasfile.close()
             except IOError:
-                traceback.print_exc()
+                traceback.print_exc() #DEBUG
                 exit(1)
         
         try:
             aliasfile = open('aliases.txt','r')
         except IOError:
-            traceback.print_exc()
+            traceback.print_exc() #DEBUG
             exit(1)
         
         for line in aliasfile:
@@ -157,13 +164,13 @@ class SpireBot(bot.SimpleBot):
                 alias = line.split(',')
                 self.aliases[alias[0]] = alias[1]
             except IndexError:
-                traceback.print_exc()
+                traceback.print_exc() #DEBUG
 
 if __name__ == '__main__':
-    args = parseargs.getargs() # get command line arguments
-    config = parseconfig.getconfig() # read in settings.cfg
+    args = parseargs.getargs()
+    #config = parseconfig.getconfig()
     
-    spirebot = SpireBot(args) # instantiate bot class
+    spirebot = SpireBot(args)
     
     if args.use_identd_server:
         id = 'SpireBot'
@@ -173,6 +180,6 @@ if __name__ == '__main__':
         if args.identd_port:
             idport = args.identd_port
         identd = ident.IdentServer(port=idport, userid=id)
-        start_all()
-    else:
-        spirebot.start()
+        identd.start()
+    
+    spirebot.start()
