@@ -48,8 +48,8 @@ class SpireBot(bot.SimpleBot):
             traceback.print_exc() #DEBUG
             exit(1)
         
-        self.corecmds= ['alias','load','unload','reload','quit'] # commands required for the proper operation of the bot
-        self.adminfuncs = self.corecmds
+        self.corecmds = ['load','unload','reload','quit'] # commands required for the proper operation of the bot
+        self.admincmds = self.corecmds
         self.modules = {}
         self.aliases = {}
         for event in self.eventlist:
@@ -68,10 +68,11 @@ class SpireBot(bot.SimpleBot):
     
     def on_message(self, event): # will execute whenever a message ("PRIVMSG <user|channel> :<message>") is recieved by the bot, both channel and query
         if event.message.find(self.trigger) == 0: # ex: ~quit or ~join #channel
-            self.call_user_cmd(event) # call predefined function in /commands (these are invoked by an irc user directly)
+            self.call_user_cmd(event)
         
         self.call_listeners(event, 'message')
     
+    # TODO: find a[n easy] way for modules to add their own commands without needing a .py file for each
     def call_user_cmd(self, event):
         admincmd = False
         alias = ''
@@ -80,7 +81,8 @@ class SpireBot(bot.SimpleBot):
         if command in self.aliases:
             alias = command
             command = self.aliases[command]
-        # TODO: remake this so it actually supports [un]loading functions...
+        # TODO: change this so it supports disabling of commands
+        # TODO: re-add old method of checking for admin commands in addition to current method
         if command == '__init__': return
         elif not command.isalnum():
             command = command.translate(None,("/", "\\", ":", "(", ")", "<", ">", "|", "?", "*", "."))
