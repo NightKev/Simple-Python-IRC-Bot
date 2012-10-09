@@ -16,7 +16,7 @@ class SpireBot(bot.SimpleBot):
     eventlist = ('any','welcome','ping','invite','kick','join','quit','part','nick_change','error', # ircutils.event.StandardEvent
         'message','channel_message','private_message', 'notice','channel_notice','private_notice', # ircutils.event.MessageEvent
         'ctcp','ctcp_action','ctcp_userinfo','ctcp_clientinfo','ctcp_version','ctcp_ping','ctcp_error','ctcp_time','dcc', # ircutils.event.CTCPEvent
-        'reply','name_reply','list_reply','error_reply') # ostensibly, ircutils.event.ReplyEvent
+        'reply','name_reply','list_reply','error_reply') # unknown, ircutils.event.ReplyEvent?
     
     for event_ in eventlist: # create handlers for all possible ircutils builtin events
         if event_ == 'message': continue
@@ -182,6 +182,6 @@ if __name__ == '__main__':
         if args.identd_port:
             idport = args.identd_port
         identd = ident.IdentServer(port=idport, userid=id)
-        identd.start()
-    
-    spirebot.start()
+        start_all()
+    else:
+        spirebot.start()
