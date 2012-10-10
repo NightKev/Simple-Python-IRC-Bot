@@ -2,10 +2,11 @@
 *.bat
 *.log
 *.pyc
+*.pyo
 *.txt
 *.bak
 *.cfg
 !COPYING.txt
 !LICENSE.txt
-test.py
+test.*
 !__init__.py
