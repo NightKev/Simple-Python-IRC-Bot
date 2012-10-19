@@ -54,7 +54,7 @@ class Trivia(events.EventListener): # I think I'm doing this wrong... it's so co
         import xml.etree.ElementTree as ET
         article_xml = ET.fromstring(article)
         
-        # TODO(?): Make this future-proof against changes in the location of the 'text' element in the article XML
+        # TODO: Make this less bad
         try:
             if article_xml[1][3][6].tag[42:] == "text":
                 article_text = article_xml[1][3][6].text
@@ -125,4 +125,6 @@ def main(self, args, event, alias):
             self.send_message(event.target, "No category has been chosen.")
             return
         
-        self.register_listener("channel_message",Trivia()) # is this right?
+        #self.register_listener("channel_message",Trivia()) # looking over the ircutils source, this seems the wrong way to do it... but now what?
+        self.wikitrivia.started = True
+        
