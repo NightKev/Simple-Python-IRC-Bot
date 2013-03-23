@@ -10,3 +10,4 @@
 !LICENSE.txt
 test.*
 !__init__.py
+*.pnproj
