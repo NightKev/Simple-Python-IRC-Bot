@@ -1,5 +1,4 @@
-# Copyright (c) 2011 Kevin Skusek
-# The full copyright notice can be found in the file LICENSE
+# This file is licensed under CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
 
 files = []
 import os, fnmatch

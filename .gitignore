@@ -11,3 +11,5 @@
 test.*
 !__init__.py
 *.pnproj
+*.pnps
+/commands
