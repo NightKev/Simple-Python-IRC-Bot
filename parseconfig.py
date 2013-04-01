@@ -13,41 +13,66 @@
 # You should have received a copy of the GNU General Public License
 # along with SpireBot.  If not, see <http://www.gnu.org/licenses/>.
 
-def setdefaults():
-    import os.path
+class BotConfig:
+    def __init__(self, restore_defaults=False):
+        self.set_defaults(restore_defaults)
+        # self.config = self.get_configs()
 
-    if not os.path.exists("defaults.cfg"):
+    def set_defaults(self, restore_defaults):
+        import os.path
+
+        if not os.path.exists("defaults.cfg") or restore_defaults:
+            import ConfigParser
+            config = ConfigParser.SafeConfigParser()
+
+            c = "Bot Settings"
+            config.add_section(c)
+            config.set(c, "Username", "SpireBot")
+            config.set(c, "Password", "")
+            config.set(c, "Ident", "SpireBot")
+            config.set(c, "Real Name", "SpireBot")
+            config.set(c, "User Modes", "+Bix")
+            config.set(c, "Trigger", "~")
+            config.set(c, "Autoload Modules", "true")
+
+            c = "IRC Server"
+            config.add_section(c)
+            config.set(c, "Server", "")
+            config.set(c, "Port", "6667")
+            config.set(c, "Server Password", "")
+            config.set(c, "Use SSL", "false")
+            config.set(c, "Default Channels", "")
+
+            c = "Misc Settings"
+            config.add_section(c)
+            config.set(c, "Use Identd Server", "false")
+            config.set(c, "Identd Server Port", "113")
+
+            try:
+                defaultConfigFile = open("defaults.cfg", "w")
+                config.write(defaultConfigFile)
+                defaultConfigFile.close()
+            except IOError:
+                print("Error opening 'defaults.cfg', make sure directory permissions are properly set.")
+                exit(1)
+
+            try:
+                if not os.path.exists("settings.cfg") or restore_defaults:
+                    userConfigFile = open("settings.cfg", "w")
+                    config.write(userConfigFile)
+                    userConfigFile.close()
+            except IOError:
+                print("Error opening 'settings.cfg', make sure directory permissions are properly set.")
+                exit(1)
+
+
+
+    def get_configs(self):
         import ConfigParser
-        config = ConFigParser.SafeConfigParser()
 
-        c = "Misc Settings"
-        config.add_section(c)
-        config.set(c, "Identd Server Port", "113")
-        config.set(c, "Use Identd Server", "false")
+        config = ConfigParser.SafeConfigParser()
+        config.readfp(open("defaults.cfg"))
+        config.read("settings.cfg")
 
-        c = "IRC Server"
-        config.add_section(c)
-        config.set(c, "Default Channels", "")
-        config.set(c, "Use SSL", "false")
-        config.set(c, "Server Password", "")
-        config.set(c, "Port", "6667")
-        config.set(c, "Server", "")
-
-        c = "Bot Settings"
-        config.add_section(c)
-        config.set(c, "Autoload Modules", "true")
-        config.set(c, "Trigger", "~")
-        config.set(c, "User Modes", "+Bix")
-        config.set(c, "Real Name", "SpireBot")
-        config.set(c, "Ident", "SpireBot")
-        config.set(c, "Password", "")
-        config.set(c, "Username", "SpireBot")
-
-
-
-def getconfigs():
-    import ConfigParser
-
-    config = ConfigParser.SafeConfigParser()
-    config.readfp(open("settings.cfg"))
-
+if __name__ == '__main__':
+    BotConfig()
